@@ -21,8 +21,7 @@ setup(
     PyDispatcher_, which in turn was based on a highly-rated recipe_ in the
     Python Cookbook.
 
-    The latest development version is available in a `Subversion
-    repository
+    You can also get the `latest development version
     <http://getschevo.org/hg/repos.cgi/louie-dev/archive/tip.tar.gz#egg=Louie-dev>`__.
 
     .. _PyDispatcher: http://pydispatcher.sf.net/
