@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import textwrap
 
 try:
     import buildutils
@@ -14,16 +15,20 @@ setup(
 
     description=version.DESCRIPTION,
 
-    long_description="""\
-Louie provides Python programmers with a straightforward way to
-dispatch signals between objects in a wide variety of contexts. It is
-based on PyDispatcher_, which in turn was based on a highly-rated
-recipe_ in the Python Cookbook.
+    long_description=textwrap.dedent("""
+    Louie provides Python programmers with a straightforward way to dispatch
+    signals between objects in a wide variety of contexts. It is based on
+    PyDispatcher_, which in turn was based on a highly-rated recipe_ in the
+    Python Cookbook.
 
-.. _PyDispatcher: http://pydispatcher.sf.net/
+    The latest development version is available in a `Subversion
+    repository
+    <http://getschevo.org/hg/repos.cgi/louie-dev/archive/tip.tar.gz#egg=Louie-dev>`__.
 
-.. _recipe: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
-""",
+    .. _PyDispatcher: http://pydispatcher.sf.net/
+
+    .. _recipe: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
+    """),
 
     classifiers=[
     'Intended Audience :: Developers',
