@@ -1,0 +1,65 @@
+=========
+ Changes
+=========
+
+This document provides a detailed list of changes made to Louie,
+including differences between PyDispatcher_ and the initial release of
+Louie.
+
+.. _PyDispatcher: http://cheeseshop.python.org/pypi/PyDispatcher
+
+.. sectnum::
+
+.. contents::
+
+
+Changes from PyDispatcher to Louie 1.0
+======================================
+
+
+Packaging and Distribution
+--------------------------
+
+- Louie uses setuptools_ for managing its placement in the Python
+  package hierarchy.
+
+.. _setuptools: http://www.python.org/pypi/setuptools
+
+
+Naming and Importing
+--------------------
+
+- The package name for Louie is `louie`.
+
+- The preferred way of using Louie is to only import the `louie`
+  package, e.g.::
+
+    import louie
+    louie.connect(...)
+    louie.send(...)
+
+- Function and method names are lowercase_with_underscores, to conform
+  to PEP-0008.
+
+
+Plug-ins
+--------
+
+* Louie provides globally-registered plug-ins that augment various
+  aspects of Louie's operation.
+
+* Available plug-ins include the following:
+
+  - `QtWidgetPlugin` knows how to handle Qt widgets that still exist
+    as Python objects, but whose C++ objects have been destroyed.
+
+  - `TwistedDispatchPlugin` converts Louie's default synchronous
+    signal dispatching behavior to an asynchronous behavior based on
+    Twisted Deferred objects.
+
+
+..
+     Local Variables:
+     mode: rst
+     End: 
+
