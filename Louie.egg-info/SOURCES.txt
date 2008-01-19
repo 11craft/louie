@@ -1,8 +1,11 @@
+.hgtags
+PKG-INFO
 ez_setup.py
 setup.cfg
 setup.py
 Louie.egg-info/PKG-INFO
 Louie.egg-info/SOURCES.txt
+Louie.egg-info/dependency_links.txt
 Louie.egg-info/not-zip-safe
 Louie.egg-info/requires.txt
 Louie.egg-info/top_level.txt
