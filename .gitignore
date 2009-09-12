@@ -7,3 +7,4 @@ dist
 *.so
 *~
 doc/build
+doc/_build
