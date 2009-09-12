@@ -1,5 +1,5 @@
 =======
- About 
+ About
 =======
 
 Louie is based on PyDispatcher_.  Here is a very good detailed
@@ -7,10 +7,6 @@ description of what both PyDispatcher and Louie offer you, based on
 the description available at the PyDispatcher website.
 
 .. _PyDispatcher: http://pydispatcher.sf.net/
-
-.. sectnum::
-
-.. contents::
 
 PyDispatcher provides a multiple-producer-multiple-consumer
 signal-registration and routing infrastructure, suitable for use in
@@ -61,10 +57,3 @@ some specifics:
   Thus, receivers can be general in nature, even ignoring all
   arguments, or they can be specific, accepting whichever arguments it
   needs.
-
-
-..
-     Local Variables:
-     mode: rst
-     End: 
-

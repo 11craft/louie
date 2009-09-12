@@ -9,10 +9,3 @@ The following people have contributed code to PyDispatcher and Louie:
 - Mike C. Fletcher
 
 - Matthew R. Scott
-
-
-..
-     Local Variables:
-     mode: rst
-     End: 
-

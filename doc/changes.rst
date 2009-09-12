@@ -8,10 +8,6 @@ Louie.
 
 .. _PyDispatcher: http://cheeseshop.python.org/pypi/PyDispatcher
 
-.. sectnum::
-
-.. contents::
-
 
 Changes from PyDispatcher to Louie 1.0
 ======================================
@@ -56,10 +52,3 @@ Plug-ins
   - `TwistedDispatchPlugin` converts Louie's default synchronous
     signal dispatching behavior to an asynchronous behavior based on
     Twisted Deferred objects.
-
-
-..
-     Local Variables:
-     mode: rst
-     End: 
-
