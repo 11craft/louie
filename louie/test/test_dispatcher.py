@@ -31,7 +31,7 @@ class TestDispatcher(unittest.TestCase):
         assert len(dispatcher.senders_back) == 0, dispatcher.senders_back
         assert len(dispatcher.connections) == 0, dispatcher.connections
         assert len(dispatcher.senders) == 0, dispatcher.senders
-    
+
     def test_Exact(self):
         a = Dummy()
         signal = 'this'
@@ -44,7 +44,7 @@ class TestDispatcher(unittest.TestCase):
         louie.disconnect(x, signal, a)
         assert len(list(louie.get_all_receivers(a, signal))) == 0
         self._isclean()
-        
+
     def test_AnonymousSend(self):
         a = Dummy()
         signal = 'this'
@@ -57,7 +57,7 @@ class TestDispatcher(unittest.TestCase):
         louie.disconnect(x, signal)
         assert len(list(louie.get_all_receivers(None, signal))) == 0
         self._isclean()
-        
+
     def test_AnyRegistration(self):
         a = Dummy()
         signal = 'this'
@@ -75,7 +75,7 @@ class TestDispatcher(unittest.TestCase):
             % (expected, result))
         assert len(list(louie.get_all_receivers(louie.Any, signal))) == 0
         self._isclean()
-        
+
     def test_AllRegistration(self):
         a = Dummy()
         signal = 'this'
@@ -88,7 +88,29 @@ class TestDispatcher(unittest.TestCase):
         louie.disconnect(x, louie.All, a)
         assert len(list(louie.get_all_receivers(a, louie.All))) == 0
         self._isclean()
-        
+
+    def test_receiver_disconnects_itself(self):
+        disconnect_receiver1 = []
+        signal = 'this'
+        def receiver1():
+            if disconnect_receiver1:
+                louie.disconnect(receiver1, signal)
+            return 1
+        def receiver2():
+            return 2
+        louie.connect(receiver1, signal)
+        louie.connect(receiver2, signal)
+        # Try without disconnecting; we'll get two responses.
+        result = louie.send('this')
+        assert result == [(receiver1, 1), (receiver2, 2)]
+        # We should also get two responses when first receiver disconnects.
+        disconnect_receiver1.append(True)
+        result = louie.send('this')
+        assert result == [(receiver1, 1), (receiver2, 2)]
+        # Then the next time around should have no receiver1.
+        result = louie.send('this')
+        assert result == [(receiver2, 2)]
+
     def test_GarbageCollected(self):
         a = Callable()
         b = Dummy()
@@ -103,7 +125,7 @@ class TestDispatcher(unittest.TestCase):
         assert len(list(louie.get_all_receivers(b, signal))) == 0, (
             "Remaining handlers: %s" % (louie.get_all_receivers(b, signal),))
         self._isclean()
-        
+
     def test_GarbageCollectedObj(self):
         class x:
             def __call__(self, a):
