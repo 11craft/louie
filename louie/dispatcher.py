@@ -289,7 +289,10 @@ def get_all_receivers(sender=Any, signal=All):
         # Add receivers that receive *all* signals from *any* sender.
         get_receivers(Any, All),
         ):
-        for receiver in receivers:
+        # Make a copy of each list so it's immutable within the context
+        # of this function, even if a receiver calls disconnect() or any
+        # other function that changes a list of receivers.
+        for receiver in list(receivers):
             if receiver: # filter out dead instance-method weakrefs
                 try:
                     if not receiver in yielded:
