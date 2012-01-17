@@ -5,27 +5,36 @@ callable object can take, and subset the given arguments to match only
 those which are acceptable.
 """
 
-def function(receiver):
-    """Get function-like callable object for given receiver.
+import sys
+if sys.hexversion >= 0x3000000:
+    im_func = '__func__'
+    im_self = '__self__'
+    im_code = '__code__'
+    func_code = '__code__'
+else:
+    im_func = 'im_func'
+    im_self = 'im_self'
+    im_code = 'im_code'
+    func_code = 'func_code'
 
-    returns (function_or_method, codeObject, fromMethod)
 
-    If fromMethod is true, then the callable already has its first
-    argument bound.
-    """
-    if hasattr(receiver, '__call__'):
-        # receiver is a class instance; assume it is callable.
-        # Reassign receiver to the actual method that will be called.
-        c = receiver.__call__
-        if hasattr(c, 'im_func') or hasattr(c, 'im_code'):
-            receiver = c
-    if hasattr(receiver, 'im_func'):
-        # receiver is an instance-method.
-        return receiver, receiver.im_func.func_code, 1
-    elif not hasattr(receiver, 'func_code'):
-        raise ValueError(
-            'unknown reciever type %s %s' % (receiver, type(receiver)))
-    return receiver, receiver.func_code, 0
+def function( receiver ):
+        """Get function-like callable object for given receiver
+
+        returns (function_or_method, codeObject, fromMethod)
+
+        If fromMethod is true, then the callable already
+        has its first argument bound
+        """
+        if hasattr( receiver, im_func ):
+                # an instance-method...
+                return receiver, getattr(getattr(receiver, im_func), func_code), 1
+        elif hasattr(receiver, 'func_code'):
+                return receiver, receiver.func_code, 0
+        elif hasattr(receiver, '__call__'):
+                return function(receiver.__call__)
+        else:
+                raise ValueError('unknown reciever type %s %s'%(receiver, type(receiver)))
 
 
 def robust_apply(receiver, signature, *arguments, **named):
