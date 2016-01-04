@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import textwrap
 
 try:
     import buildutils
@@ -8,6 +7,8 @@ except ImportError:
 
 from louie import version
 
+README = open('README.rst', 'r').read()
+
 setup(
     name=version.NAME,
 
@@ -15,19 +16,7 @@ setup(
 
     description=version.DESCRIPTION,
 
-    long_description=textwrap.dedent("""
-    Louie provides Python programmers with a straightforward way to dispatch
-    signals between objects in a wide variety of contexts. It is based on
-    PyDispatcher_, which in turn was based on a highly-rated recipe_ in the
-    Python Cookbook.
-
-    You can also get the `latest development version
-    <http://getschevo.org/hg/repos.cgi/louie-dev/archive/tip.tar.gz#egg=Louie-dev>`__.
-
-    .. _PyDispatcher: http://pydispatcher.sf.net/
-
-    .. _recipe: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
-    """),
+    long_description=README,
 
     classifiers=[
     'Intended Audience :: Developers',
@@ -42,9 +31,9 @@ setup(
 
     author_email='louie-users@lists.berlios.de',
 
-    url='http://louie.berlios.de/',
+    url='https://github.com/11craft/louie/',
 
-    download_url='http://cheeseshop.python.org/pypi/Louie',
+    download_url='https://pypi.python.org/pypi/Louie',
 
     license='BSD',
 
@@ -61,6 +50,4 @@ setup(
     },
 
     test_suite = 'nose.collector',
-
     )
-      
