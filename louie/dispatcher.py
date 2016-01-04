@@ -134,7 +134,7 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     if weak:
         receiver = saferef.safe_ref(receiver, on_delete=_remove_receiver)
     senderkey = id(sender)
-    if connections.has_key(senderkey):
+    if senderkey in connections.keys():
         signals = connections[senderkey]
     else:
         connections[senderkey] = signals = {}
@@ -153,7 +153,7 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     receiver_id = id(receiver)
     # get current set, remove any current references to
     # this receiver in the set, including back-references
-    if signals.has_key(signal):
+    if signal in signals.keys():
         receivers = signals[signal]
         _remove_old_back_refs(senderkey, signal, receiver, receivers)
     else:
@@ -454,7 +454,7 @@ def send_robust(signal=All, sender=Anonymous, *arguments, **named):
                 *arguments,
                 **named
                 )
-        except Exception, err:
+        except Exception as err:
             responses.append((receiver, err))
         else:
             responses.append((receiver, response))
