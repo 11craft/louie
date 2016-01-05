@@ -46,11 +46,11 @@ if __debug__:
     sends = 0
 
     def print_stats():
-        print ('\n'
-               'Louie connects: %i\n'
-               'Louie disconnects: %i\n'
-               'Louie sends: %i\n'
-               '\n') % (connects, disconnects, sends)
+        print('\n'
+               'Louie connects: {}\n'
+               'Louie disconnects: {}\n'
+               'Louie sends: {}\n'
+               '\n'.format(connects, disconnects, sends))
 
     if 'PYDISPATCH_STATS' in os.environ:
         import atexit
