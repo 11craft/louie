@@ -4,7 +4,6 @@ Provides a function 'call', which can sort out what arguments a given
 callable object can take, and subset the given arguments to match only
 those which are acceptable.
 """
-import six
 
 def function(receiver):
     """Get function-like callable object for given receiver.
@@ -14,7 +13,7 @@ def function(receiver):
     If fromMethod is true, then the callable already has its first
     argument bound.
     """
-    if six.callable(receiver):
+    if hasattr(receiver, '__call__'):
         # receiver is a class instance; assume it is callable.
         # Reassign receiver to the actual method that will be called.
         c = receiver.__call__

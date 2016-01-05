@@ -2,7 +2,6 @@
 
 import weakref
 import traceback
-import six
 
 def safe_ref(target, on_delete=None):
     """Return a *safe* weak reference to a callable target.
@@ -38,7 +37,7 @@ def safe_ref(target, on_delete=None):
            return reference
 
 
-    if six.callable(on_delete):
+    if hasattr(on_delete, '__call__'):
         return weakref.ref(target, on_delete)
     else:
         return weakref.ref(target)
