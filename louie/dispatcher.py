@@ -37,7 +37,7 @@ from louie import robustapply
 from louie import saferef
 from louie.sender import Any, Anonymous
 from louie.signal import All
-
+import six
 
 # Support for statistics.
 if __debug__:
@@ -134,7 +134,7 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     if weak:
         receiver = saferef.safe_ref(receiver, on_delete=_remove_receiver)
     senderkey = id(sender)
-    if senderkey in connections.keys():
+    if senderkey in connections:
         signals = connections[senderkey]
     else:
         connections[senderkey] = signals = {}
@@ -148,12 +148,12 @@ def connect(receiver, signal=All, sender=Any, weak=True):
         try:
             weak_sender = weakref.ref(sender, remove)
             senders[senderkey] = weak_sender
-        except:
+        except Exception:
             pass
     receiver_id = id(receiver)
     # get current set, remove any current references to
     # this receiver in the set, including back-references
-    if signal in signals.keys():
+    if signal in signals:
         receivers = signals[signal]
         _remove_old_back_refs(senderkey, signal, receiver, receivers)
     else:
@@ -164,7 +164,7 @@ def connect(receiver, signal=All, sender=Any, weak=True):
             senders_back[receiver_id] = current = []
         if senderkey not in current:
             current.append(senderkey)
-    except:
+    except Exception:
         pass
     receivers.append(receiver)
     # Update stats.
@@ -473,7 +473,7 @@ def _remove_receiver(receiver):
         except KeyError:
             pass
         else:
-            for signal in signals:
+            for signal in list(signals):
                 try:
                     receivers = connections[senderkey][signal]
                 except KeyError:
@@ -495,7 +495,7 @@ def _cleanup_connections(senderkey, signal):
     empty."""
     try:
         receivers = connections[senderkey][signal]
-    except:
+    except Exception:
         pass
     else:
         if not receivers:
@@ -522,7 +522,7 @@ def _remove_sender(senderkey):
     # could be weakly referenced.
     try:
         del senders[senderkey]
-    except:
+    except Exception:
         pass
 
 
@@ -533,7 +533,7 @@ def _remove_back_refs(senderkey):
     except KeyError:
         signals = None
     else:
-        for signal, receivers in signals.iteritems():
+        for signal, receivers in six.iteritems(signals):
             for receiver in receivers:
                 _kill_back_ref(receiver, senderkey)
 
@@ -558,7 +558,7 @@ def _remove_old_back_refs(senderkey, signal, receiver, receivers):
         found = 0
         signals = connections.get(signal)
         if signals is not None:
-            for sig, recs in connections.get(signal, {}).iteritems():
+            for sig, recs in six.iteritems(connections.get(signal, {})):
                 if sig != signal:
                     for rec in recs:
                         if rec is old_receiver:
@@ -578,7 +578,7 @@ def _kill_back_ref(receiver, senderkey):
     while senderkey in senders:
         try:
             senders.remove(senderkey)
-        except:
+        except Exception:
             break
     if not senders:
         try:
