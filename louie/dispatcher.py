@@ -37,7 +37,22 @@ from louie import robustapply
 from louie import saferef
 from louie.sender import Any, Anonymous
 from louie.signal import All
-import six
+try:
+    dict.iteritems
+except AttributeError:
+    #python 3
+    def itervalues(d):
+        return iter(d.values())
+    def iteritems(d):
+        return iter(d.items())
+
+else:
+    #python 2
+    def itervalues(d):
+        return d.itervalues()
+    def iteritems(d):
+        return d.iteritems()
+
 
 # Support for statistics.
 if __debug__:
@@ -533,7 +548,7 @@ def _remove_back_refs(senderkey):
     except KeyError:
         signals = None
     else:
-        for signal, receivers in six.iteritems(signals):
+        for signal, receivers in iteritems(signals):
             for receiver in receivers:
                 _kill_back_ref(receiver, senderkey)
 
@@ -558,7 +573,7 @@ def _remove_old_back_refs(senderkey, signal, receiver, receivers):
         found = 0
         signals = connections.get(signal)
         if signals is not None:
-            for sig, recs in six.iteritems(connections.get(signal, {})):
+            for sig, recs in iteritems(connections.get(signal, {})):
                 if sig != signal:
                     for rec in recs:
                         if rec is old_receiver:
