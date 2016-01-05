@@ -134,8 +134,8 @@ class BoundMethodWeakref(object):
                     try:
                         traceback.print_exc()
                     except AttributeError as e:
-                        print ('Exception during saferef %s '
-                               'cleanup function %s: %s' % (self, function, e))
+                        print('Exception during saferef {} '
+                               'cleanup function {}: {}'.format(self, function, e))
         self.deletion_methods = [on_delete]
         self.key = self.calculate_key(target)
         try: 
