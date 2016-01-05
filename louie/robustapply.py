@@ -52,8 +52,8 @@ def robust_apply(receiver, signature, *arguments, **named):
         ]:
         if name in named:
             raise TypeError(
-                'Argument {!r} specified both positionally '
-                'and as a keyword for calling {!r}'.format(name, signature))
+                'Argument {0!r} specified both positionally '
+                'and as a keyword for calling {1!r}'.format(name, signature))
     if not (code_object.co_flags & 8):
         # fc does not have a **kwds type parameter, therefore 
         # remove unacceptable arguments.

@@ -9,7 +9,7 @@ def install_plugin(plugin):
     for p in dispatcher.plugins:
         if p.__class__ is cls:
             raise error.PluginTypeError(
-                'Plugin of type %r already installed.' % cls)
+                'Plugin of type {0!r} already installed.'.format(cls))
     dispatcher.plugins.append(plugin)
 
 def remove_plugin(plugin):

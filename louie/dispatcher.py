@@ -144,8 +144,8 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     """
     if signal is None:
         raise error.DispatcherTypeError(
-            'Signal cannot be None (receiver=%r sender=%r)'
-            % (receiver, sender))
+            'Signal cannot be None (receiver={0!r} sender={1!r})'
+                .format(receiver, sender))
     if weak:
         receiver = saferef.safe_ref(receiver, on_delete=_remove_receiver)
     senderkey = id(sender)
@@ -215,8 +215,8 @@ def disconnect(receiver, signal=All, sender=Any, weak=True):
     """
     if signal is None:
         raise error.DispatcherTypeError(
-            'Signal cannot be None (receiver=%r sender=%r)'
-            % (receiver, sender))
+            'Signal cannot be None (receiver={0!r} sender={1!r})'
+                .format(receiver, sender))
     if weak:
         receiver = saferef.safe_ref(receiver)
     senderkey = id(sender)
@@ -225,17 +225,16 @@ def disconnect(receiver, signal=All, sender=Any, weak=True):
         receivers = signals[signal]
     except KeyError:
         raise error.DispatcherKeyError(
-            'No receivers found for signal %r from sender %r' 
-            % (signal, sender)
-            )
+            'No receivers found for signal {0!r} from sender {1!r}'
+                .format(signal, sender))
     try:
         # also removes from receivers
         _remove_old_back_refs(senderkey, signal, receiver, receivers)
     except ValueError:
         raise error.DispatcherKeyError(
-            'No connection to receiver %s for signal %s from sender %s'
-            % (receiver, signal, sender)
-            )
+            'No connection to receiver {0!r} '
+            'for signal {1!r} from sender {2!r}'
+                .format(receiver, signal, sender))
     _cleanup_connections(senderkey, signal)
     # Update stats.
     if __debug__:

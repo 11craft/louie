@@ -39,8 +39,8 @@ class TestDispatcher(unittest.TestCase):
         expected = [(x, a)]
         result = louie.send('this', a, a=a)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         louie.disconnect(x, signal, a)
         assert len(list(louie.get_all_receivers(a, signal))) == 0
         self._isclean()
@@ -52,8 +52,8 @@ class TestDispatcher(unittest.TestCase):
         expected = [(x, a)]
         result = louie.send(signal, None, a=a)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         louie.disconnect(x, signal)
         assert len(list(louie.get_all_receivers(None, signal))) == 0
         self._isclean()
@@ -65,14 +65,14 @@ class TestDispatcher(unittest.TestCase):
         expected = [(x, a)]
         result = louie.send('this', object(), a=a)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         louie.disconnect(x, signal, louie.Any)
         expected = []
         result = louie.send('this', object(), a=a)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         assert len(list(louie.get_all_receivers(louie.Any, signal))) == 0
         self._isclean()
 
@@ -83,8 +83,8 @@ class TestDispatcher(unittest.TestCase):
         expected = [(x, a)]
         result = louie.send('this', a, a=a)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         louie.disconnect(x, louie.All, a)
         assert len(list(louie.get_all_receivers(a, louie.All))) == 0
         self._isclean()
@@ -120,10 +120,11 @@ class TestDispatcher(unittest.TestCase):
         del a
         result = louie.send('this', b, a=b)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         assert len(list(louie.get_all_receivers(b, signal))) == 0, (
-            "Remaining handlers: %s" % (louie.get_all_receivers(b, signal),))
+            "Remaining handlers: {0}"
+                .format(louie.get_all_receivers(b, signal)))
         self._isclean()
 
     def test_GarbageCollectedObj(self):
@@ -138,10 +139,11 @@ class TestDispatcher(unittest.TestCase):
         del a
         result = louie.send('this', b, a=b)
         assert result == expected, (
-            "Send didn't return expected result:\n\texpected:%s\n\tgot:%s"
-            % (expected, result))
+            "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
+                .format(expected, result))
         assert len(list(louie.get_all_receivers(b, signal))) == 0, (
-            "Remaining handlers: %s" % (louie.get_all_receivers(b, signal),))
+            "Remaining handlers: {0}"
+                .format(louie.get_all_receivers(b, signal)))
         self._isclean()
 
     def test_MultipleRegistration(self):
@@ -157,7 +159,8 @@ class TestDispatcher(unittest.TestCase):
         result = louie.send('this', b, a=b)
         assert len(result) == 1, result
         assert len(list(louie.get_all_receivers(b, signal))) == 1, (
-            "Remaining handlers: %s" % (louie.get_all_receivers(b, signal),))
+            "Remaining handlers: {0}"
+                .format(louie.get_all_receivers(b, signal)))
         del a
         del b
         del result

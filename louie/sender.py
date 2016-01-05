@@ -5,7 +5,7 @@ class _SENDER(type):
     """Base metaclass for sender classes."""
 
     def __str__(cls):
-        return '<Sender: %s>' % (cls.__name__, )
+        return '<Sender: {0}>'.format(cls.__name__)
 
 
 class Any(object):

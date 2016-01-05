@@ -12,7 +12,7 @@ class _SIGNAL(type):
     """Base metaclass for signal classes."""
 
     def __str__(cls):
-        return '<Signal: %s>' % (cls.__name__, )
+        return '<Signal: {0}>'.format(cls.__name__)
 
 
 class Signal(object):

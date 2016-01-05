@@ -20,10 +20,9 @@ def safe_ref(target, on_delete=None):
             # Turn a bound method into a BoundMethodWeakref instance.
             # Keep track of these instances for lookup by disconnect().
             assert hasattr(target, 'im_func'), (
-                "safe_ref target %r has im_self, but no im_func, "
+                "safe_ref target {0!r} has im_self, but no im_func, "
                 "don't know how to create reference"
-                % target
-                )
+                    .format(target))
             reference = BoundMethodWeakref(target=target, on_delete=on_delete)
             return reference
     
@@ -31,7 +30,7 @@ def safe_ref(target, on_delete=None):
     if hasattr(target, '__self__'):
         if target.__self__ is not None:
            assert hasattr(target, '__func__'), (
-               "safe_ref target {!r} has __self__, but no __func__, "
+               "safe_ref target {0!r} has __self__, but no __func__, "
                "don't know how to create reference".format(target)) 
            reference = BoundMethodWeakref(target=target, on_delete=on_delete)
            return reference
@@ -164,7 +163,7 @@ class BoundMethodWeakref(object):
     
     def __str__(self):
         """Give a friendly representation of the object."""
-        return "%s(%s.%s)" % (
+        return "{0}({1}.{2})".format(
             self.__class__.__name__,
             self.self_name,
             self.func_name,
