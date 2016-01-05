@@ -3,7 +3,6 @@
 import weakref
 import traceback
 
-
 def safe_ref(target, on_delete=None):
     """Return a *safe* weak reference to a callable target.
 
@@ -27,7 +26,18 @@ def safe_ref(target, on_delete=None):
                 )
             reference = BoundMethodWeakref(target=target, on_delete=on_delete)
             return reference
-    if callable(on_delete):
+    
+    #attributes have changed names in python 3.x
+    if hasattr(target, '__self__'):
+        if target.__self__ is not None:
+           assert hasattr(target, '__func__'), (
+               "safe_ref target {!r} has __self__, but no __func__, "
+               "don't know how to create reference".format(target)) 
+           reference = BoundMethodWeakref(target=target, on_delete=on_delete)
+           return reference
+
+
+    if hasattr(on_delete, '__call__'):
         return weakref.ref(target, on_delete)
     else:
         return weakref.ref(target)
@@ -122,23 +132,34 @@ class BoundMethodWeakref(object):
                 except Exception:
                     try:
                         traceback.print_exc()
-                    except AttributeError, e:
-                        print ('Exception during saferef %s '
-                               'cleanup function %s: %s' % (self, function, e))
+                    except AttributeError as e:
+                        print('Exception during saferef {} '
+                               'cleanup function {}: {}'.format(self, function, e))
         self.deletion_methods = [on_delete]
         self.key = self.calculate_key(target)
-        self.weak_self = weakref.ref(target.im_self, remove)
-        self.weak_func = weakref.ref(target.im_func, remove)
-        self.self_name = str(target.im_self)
-        self.func_name = str(target.im_func.__name__)
-        
+        try: 
+            self.weak_self = weakref.ref(target.im_self, remove)
+            self.weak_func = weakref.ref(target.im_func, remove)
+            self.self_name = str(target.im_self)
+            self.func_name = str(target.im_func.__name__)
+        except AttributeError:
+            self.weak_self = weakref.ref(target.__self__, remove)
+            self.weak_func = weakref.ref(target.__func__, remove)
+            self.self_name = str(target.__self__)
+            self.func_name = str(target.__func__.__name__) 
+
     def calculate_key(cls, target):
         """Calculate the reference key for this reference.
 
         Currently this is a two-tuple of the id()'s of the target
         object and the target function respectively.
         """
-        return (id(target.im_self), id(target.im_func))
+        
+        #try/except is for python3 attribute name changes probably a better way to fix this 
+        try:
+            return (id(target.im_self), id(target.im_func))
+        except AttributeError:
+            return (id(target.__self__), id(target.__func__))
     calculate_key = classmethod(calculate_key)
     
     def __str__(self):

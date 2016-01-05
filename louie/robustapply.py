@@ -18,13 +18,22 @@ def function(receiver):
         # Reassign receiver to the actual method that will be called.
         c = receiver.__call__
         if hasattr(c, 'im_func') or hasattr(c, 'im_code'):
+            receiver = c 
+        if hasattr(c, '__func__') or hasattr(c, '__code__'):
             receiver = c
     if hasattr(receiver, 'im_func'):
         # receiver is an instance-method.
         return receiver, receiver.im_func.func_code, 1
+    if hasattr(receiver, '__func__'):
+        #receiver is an instance method in python3
+        return receiver, receiver.__func__.__code__, 1
+    if hasattr(receiver, '__code__'):
+        #receiver is a function and has code, name changed in python3?
+        return receiver, receiver.__code__, 0 
+
     elif not hasattr(receiver, 'func_code'):
         raise ValueError(
-            'unknown reciever type %s %s' % (receiver, type(receiver)))
+            'unknown reciever type {} {}'.format(receiver, type(receiver)))
     return receiver, receiver.func_code, 0
 
 
@@ -41,16 +50,16 @@ def robust_apply(receiver, signature, *arguments, **named):
     for name in code_object.co_varnames[
         startIndex:startIndex + len(arguments)
         ]:
-        if named.has_key(name):
+        if name in named:
             raise TypeError(
-                'Argument %r specified both positionally '
-                'and as a keyword for calling %r'
-                % (name, signature)
-                )
+                'Argument {!r} specified both positionally '
+                'and as a keyword for calling {!r}'.format(name, signature))
     if not (code_object.co_flags & 8):
         # fc does not have a **kwds type parameter, therefore 
         # remove unacceptable arguments.
-        for arg in named.keys():
+        # have to make this a list type in python3 as dicts cant be
+        # modified in place, producing RuntimeError 
+        for arg in list(named.keys()):
             if arg not in acceptable:
                 del named[arg]
     return receiver(*arguments, **named)

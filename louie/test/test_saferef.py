@@ -26,22 +26,22 @@ class TestSaferef(unittest.TestCase):
     def setUp(self):
         ts = []
         ss = []
-        for x in xrange(5000):
+        self.closure_count = 0
+        self.ts = ts
+        self.ss = ss
+        for x in range(5000):
             t = _Sample1()
             ts.append(t)
             s = safe_ref(t.x, self._closure)
             ss.append(s)
         ts.append(_sample2)
         ss.append(safe_ref(_sample2, self._closure))
-        for x in xrange(30):
+        for x in range(30):
             t = _Sample3()
             ts.append(t)
             s = safe_ref(t, self._closure)
             ss.append(s)
-        self.ts = ts
-        self.ss = ss
-        self.closure_count = 0
-        
+    
     def tearDown(self):
         if hasattr(self, 'ts'):
             del self.ts
@@ -56,6 +56,8 @@ class TestSaferef(unittest.TestCase):
     def test_Valid(self):
         """Test that the references are valid (return instance methods)"""
         for s in self.ss:
+            print(type(s))
+            print("TYPPPEE")
             assert s()
             
     def test_ShortCircuit(self):
@@ -65,9 +67,11 @@ class TestSaferef(unittest.TestCase):
             sd[s] = 1
         for t in self.ts:
             if hasattr(t, 'x'):
-                assert sd.has_key(safe_ref(t.x))
+                assert safe_ref(t.x) in sd
+                #assert sd.has_key(safe_ref(t.x))
             else:
-                assert sd.has_key(safe_ref(t))
+                assert safe_ref(t) in sd
+                #assert sd.has_key(safe_ref(t))
                 
     def test_Representation(self):
         """Test that the reference object's representation works
