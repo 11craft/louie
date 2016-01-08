@@ -1,8 +1,3 @@
-.. Louie documentation master file, created by
-   sphinx-quickstart on Sat Sep 12 10:51:46 2009.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Louie's documentation!
 =================================
 
@@ -32,31 +27,27 @@ Louie is licensed under `The BSD License`_.
 Louie Requirements
 ==================
 
-- Python 2.3 or higher.
+Python 2.3 or higher.
+
+Tested against Python 2.6 through 3.5.
 
 
 Installing Louie
 ================
 
-Louie uses `easy_install`_ for installation, and is distributed via
-the `Python Cheese Shop`_.
+Louie uses pip_ for installation, and is distributed via
+the `Python Package Index`_.
 
-.. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+.. _pip: https://pypi.python.org/pypi/pip
 
-.. _Python Cheese Shop: http://cheeseshop.python.org/pypi/Louie
+.. _Python Package Index: https://pypi.python.org/pypi/Louie
 
-If you already have `easy_install`, run this command::
+In many modern Python environments, and also starting with Python 3.4,
+pip installed by default.
 
-  easy_install Louie
+Run this command::
 
-If that failed, you do not have `easy_install`.  To install that,
-download `ez_setup.py`_, then run this command::
-
-  python ez_setup.py setuptools
-
-.. _ez_setup.py: http://peak.telecommunity.com/dist/ez_setup.py
-
-Then, run the `easy_install` command given above again.
+    pip install louie
 
 
 Upgrading Louie
@@ -64,38 +55,32 @@ Upgrading Louie
 
 Run this command to upgrade Louie to the latest release::
 
-  easy_install -U Louie
+    pip install -U Louie
 
 
 Development
 ===========
 
-You can track the latest changes in Louie using the Subversion
-repository or using regularly-built snapshots.
+You can track the latest changes in Louie using the Github repo.
 
 
-Using easy_install
-------------------
+Using git
+---------
 
-Provided you already have `easy_install`, run this command::
+Clone the Louie repo using git, e.g.::
 
-  easy_install -f http://louie.berlios.de/dist/ Louie
+    git clone https://github.com/11craft/louie
 
+Run this command inside your git repo directory to
+use Louie directly from source code in that directory::
 
-Using Subversion
-----------------
+    cd louie
+    pip install -e .
 
-Check out the Louie trunk as per the `Berlios usage information
-<http://developer.berlios.de/svn/?group_id=5432>`__.
+If you want to revert to the version installed in ``site-packages``,
+you can do so::
 
-Run this command inside your checkout path::
-
-  python setup.py install
-
-Alternatively, you may use Louie directly from your checkout path
-using this command::
-
-  python setup.py develop
+    pip uninstall louie
 
 
 Indices and tables
