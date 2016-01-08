@@ -1,3 +1,4 @@
+import gc
 import unittest
 
 import louie
@@ -118,6 +119,7 @@ class TestDispatcher(unittest.TestCase):
         louie.connect(a.a, signal, b)
         expected = []
         del a
+        gc.collect()
         result = louie.send('this', b, a=b)
         assert result == expected, (
             "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
@@ -137,6 +139,7 @@ class TestDispatcher(unittest.TestCase):
         louie.connect(a, signal, b)
         expected = []
         del a
+        gc.collect()
         result = louie.send('this', b, a=b)
         assert result == expected, (
             "Send didn't return expected result:\n\texpected:{0}\n\tgot:{1}"
@@ -164,6 +167,7 @@ class TestDispatcher(unittest.TestCase):
         del a
         del b
         del result
+        gc.collect()
         self._isclean()
 
     def test_robust(self):
