@@ -29,8 +29,6 @@ setup(
 
     author="Patrick K. O'Brien and contributors",
 
-    author_email='louie-users@lists.berlios.de',
-
     url='https://github.com/11craft/louie/',
 
     download_url='https://pypi.python.org/pypi/Louie',
