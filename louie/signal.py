@@ -15,9 +15,9 @@ class _SIGNAL(type):
         return '<Signal: {0}>'.format(cls.__name__)
 
 
-class Signal(object):
+class Signal(object, metaclass=_SIGNAL):
 
-    __metaclass__ = _SIGNAL
+    pass
 
 
 class All(Signal):
