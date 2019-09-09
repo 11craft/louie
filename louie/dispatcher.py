@@ -8,69 +8,49 @@ Internal attributes:
 - ``WEAKREF_TYPES``: Tuple of types/classes which represent weak
   references to receivers, and thus must be dereferenced on retrieval
   to retrieve the callable object
-        
+
 - ``connections``::
 
     { senderkey (id) : { signal : [receivers...] } }
-    
+
 - ``senders``: Used for cleaning up sender references on sender
   deletion::
 
     { senderkey (id) : weakref(sender) }
-    
+
 - ``senders_back``: Used for cleaning up receiver references on receiver
   deletion::
 
     { receiverkey (id) : [senderkey (id)...] }
 """
 
-import os
 import weakref
 
-try:
-    set
-except NameError:
-    from sets import Set as set, ImmutableSet as frozenset
-
-from louie import error
-from louie import robustapply
-from louie import saferef
-from louie.sender import Any, Anonymous
+from louie import error, robustapply, saferef
+from louie.sender import Anonymous, Any
 from louie.signal import All
-try:
-    dict.iteritems
-except AttributeError:
-    #python 3
-    def itervalues(d):
-        return iter(list(d.values()))
-    def iteritems(d):
-        return iter(list(d.items()))
-
-else:
-    #python 2
-    def itervalues(d):
-        return iter(d.values())
-    def iteritems(d):
-        return iter(d.items())
-
 
 # Support for statistics.
 if __debug__:
+    import os
+
     connects = 0
     disconnects = 0
     sends = 0
 
     def print_stats():
-        print(('\n'
-               'Louie connects: {}\n'
-               'Louie disconnects: {}\n'
-               'Louie sends: {}\n'
-               '\n'.format(connects, disconnects, sends)))
+        print(
+            "\n"
+            f"Louie connects: {connects}\n"
+            f"Louie disconnects: {disconnects}\n"
+            f"Louie sends: {sends}\n"
+            "\n"
+        )
 
-    if 'PYDISPATCH_STATS' in os.environ:
+    if "PYDISPATCH_STATS" in os.environ:
         import atexit
-        atexit.register(print_stats)
 
+        atexit.register(print_stats)
 
 
 WEAKREF_TYPES = (weakref.ReferenceType, saferef.BoundMethodWeakref)
@@ -80,6 +60,7 @@ connections = {}
 senders = {}
 senders_back = {}
 plugins = []
+
 
 def reset():
     """Reset the state of Louie.
@@ -102,7 +83,7 @@ def connect(receiver, signal=All, sender=Any, weak=True):
       If weak is ``True``, then receiver must be weak-referencable (more
       precisely ``saferef.safe_ref()`` must be able to create a
       reference to the receiver).
-    
+
       Receivers are fairly flexible in their specification, as the
       machinery in the ``robustapply`` module takes care of most of the
       details regarding figuring out appropriate subsets of the sent
@@ -115,27 +96,27 @@ def connect(receiver, signal=All, sender=Any, weak=True):
       passes in pre-weakrefed receiver references.
 
     - ``signal``: The signal to which the receiver should respond.
-    
+
       If ``All``, receiver will receive all signals from the indicated
       sender (which might also be ``All``, but is not necessarily
       ``All``).
-        
+
       Otherwise must be a hashable Python object other than ``None``
       (``DispatcherError`` raised on ``None``).
-        
+
     - ``sender``: The sender to which the receiver should respond.
-    
+
       If ``Any``, receiver will receive the indicated signals from any
       sender.
-        
+
       If ``Anonymous``, receiver will only receive indicated signals
       from ``send``/``send_exact`` which do not specify a sender, or
       specify ``Anonymous`` explicitly as the sender.
 
       Otherwise can be any python object.
-        
+
     - ``weak``: Whether to use weak references to the receiver.
-      
+
       By default, the module will attempt to use weak references to
       the receiver objects.  If this parameter is ``False``, then strong
       references will be used.
@@ -144,8 +125,8 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     """
     if signal is None:
         raise error.DispatcherTypeError(
-            'Signal cannot be None (receiver={0!r} sender={1!r})'
-                .format(receiver, sender))
+            f"Signal cannot be None (receiver={receiver!r} sender={sender!r})"
+        )
     if weak:
         receiver = saferef.safe_ref(receiver, on_delete=_remove_receiver)
     senderkey = id(sender)
@@ -156,8 +137,10 @@ def connect(receiver, signal=All, sender=Any, weak=True):
     # Keep track of senders for cleanup.
     # Is Anonymous something we want to clean up?
     if sender not in (None, Anonymous, Any):
+
         def remove(object, senderkey=senderkey):
             _remove_sender(senderkey=senderkey)
+
         # Skip objects that can not be weakly referenced, which means
         # they won't be automatically cleaned up, but that's too bad.
         try:
@@ -192,11 +175,11 @@ def disconnect(receiver, signal=All, sender=Any, weak=True):
     """Disconnect ``receiver`` from ``sender`` for ``signal``.
 
     - ``receiver``: The registered receiver to disconnect.
-    
+
     - ``signal``: The registered signal to disconnect.
-    
+
     - ``sender``: The registered sender to disconnect.
-    
+
     - ``weak``: The weakref state to disconnect.
 
     ``disconnect`` reverses the process of ``connect``, the semantics for
@@ -209,14 +192,14 @@ def disconnect(receiver, signal=All, sender=Any, weak=True):
     an object is deleted; the framework will remove routes for deleted
     objects automatically.  It's only necessary to disconnect if you
     want to stop routing to a live object.
-        
+
     Returns ``None``, may raise ``DispatcherTypeError`` or
     ``DispatcherKeyError``.
     """
     if signal is None:
         raise error.DispatcherTypeError(
-            'Signal cannot be None (receiver={0!r} sender={1!r})'
-                .format(receiver, sender))
+            f"Signal cannot be None (receiver={receiver!r} sender={sender!r})"
+        )
     if weak:
         receiver = saferef.safe_ref(receiver)
     senderkey = id(sender)
@@ -225,16 +208,16 @@ def disconnect(receiver, signal=All, sender=Any, weak=True):
         receivers = signals[signal]
     except KeyError:
         raise error.DispatcherKeyError(
-            'No receivers found for signal {0!r} from sender {1!r}'
-                .format(signal, sender))
+            f"No receivers found for signal {signal!r} from sender {sender!r}"
+        )
     try:
         # also removes from receivers
         _remove_old_back_refs(senderkey, signal, receiver, receivers)
     except ValueError:
         raise error.DispatcherKeyError(
-            'No connection to receiver {0!r} '
-            'for signal {1!r} from sender {2!r}'
-                .format(receiver, signal, sender))
+            f"No connection to receiver {receiver!r} "
+            f"for signal {signal!r} from sender {sender!r}"
+        )
     _cleanup_connections(senderkey, signal)
     # Update stats.
     if __debug__:
@@ -283,7 +266,7 @@ def live_receivers(receivers):
                     break
             if live:
                 yield receiver
-            
+
 
 def get_all_receivers(sender=Any, signal=All):
     """Get list of all receivers from global tables.
@@ -302,14 +285,14 @@ def get_all_receivers(sender=Any, signal=All):
         get_receivers(Any, signal),
         # Add receivers that receive *all* signals from *any* sender.
         get_receivers(Any, All),
-        ):
+    ):
         # Make a copy of each list so it's immutable within the context
         # of this function, even if a receiver calls disconnect() or any
         # other function that changes a list of receivers.
         for receiver in list(receivers):
-            if receiver: # filter out dead instance-method weakrefs
+            if receiver:  # filter out dead instance-method weakrefs
                 try:
-                    if not receiver in yielded:
+                    if receiver not in yielded:
                         yielded.add(receiver)
                         yield receiver
                 except TypeError:
@@ -319,11 +302,11 @@ def get_all_receivers(sender=Any, signal=All):
 
 def send(signal=All, sender=Anonymous, *arguments, **named):
     """Send ``signal`` from ``sender`` to all connected receivers.
-    
+
     - ``signal``: (Hashable) signal value; see ``connect`` for details.
 
     - ``sender``: The sender of the signal.
-    
+
       If ``Any``, only receivers registered for ``Any`` will receive the
       message.
 
@@ -358,12 +341,8 @@ def send(signal=All, sender=Anonymous, *arguments, **named):
         for plugin in plugins:
             receiver = plugin.wrap_receiver(receiver)
         response = robustapply.robust_apply(
-            receiver, original,
-            signal=signal,
-            sender=sender,
-            *arguments,
-            **named
-            )
+            receiver, original, signal=signal, sender=sender, *arguments, **named
+        )
         responses.append((receiver, response))
     # Update stats.
     if __debug__:
@@ -383,11 +362,7 @@ def send_minimal(signal=All, sender=Anonymous, *arguments, **named):
         original = receiver
         for plugin in plugins:
             receiver = plugin.wrap_receiver(receiver)
-        response = robustapply.robust_apply(
-            receiver, original,
-            *arguments,
-            **named
-            )
+        response = robustapply.robust_apply(receiver, original, *arguments, **named)
         responses.append((receiver, response))
     # Update stats.
     if __debug__:
@@ -410,15 +385,11 @@ def send_exact(signal=All, sender=Anonymous, *arguments, **named):
         for plugin in plugins:
             receiver = plugin.wrap_receiver(receiver)
         response = robustapply.robust_apply(
-            receiver, original,
-            signal=signal,
-            sender=sender,
-            *arguments,
-            **named
-            )
+            receiver, original, signal=signal, sender=sender, *arguments, **named
+        )
         responses.append((receiver, response))
     return responses
-    
+
 
 def send_robust(signal=All, sender=Anonymous, *arguments, **named):
     """Send ``signal`` from ``sender`` to all connected receivers catching
@@ -427,7 +398,7 @@ def send_robust(signal=All, sender=Anonymous, *arguments, **named):
     - ``signal``: (Hashable) signal value, see connect for details
 
     - ``sender``: The sender of the signal.
-    
+
       If ``Any``, only receivers registered for ``Any`` will receive the
       message.
 
@@ -462,12 +433,8 @@ def send_robust(signal=All, sender=Anonymous, *arguments, **named):
             receiver = plugin.wrap_receiver(receiver)
         try:
             response = robustapply.robust_apply(
-                receiver, original,
-                signal=signal,
-                sender=sender,
-                *arguments,
-                **named
-                )
+                receiver, original, signal=signal, sender=sender, *arguments, **named
+            )
         except Exception as err:
             responses.append((receiver, err))
         else:
@@ -503,7 +470,7 @@ def _remove_receiver(receiver):
     except KeyError:
         pass
 
-            
+
 def _cleanup_connections(senderkey, signal):
     """Delete empty signals for ``senderkey``. Delete ``senderkey`` if
     empty."""
@@ -532,7 +499,7 @@ def _remove_sender(senderkey):
         del connections[senderkey]
     except KeyError:
         pass
-    # Senderkey will only be in senders dictionary if sender 
+    # Senderkey will only be in senders dictionary if sender
     # could be weakly referenced.
     try:
         del senders[senderkey]
@@ -547,7 +514,7 @@ def _remove_back_refs(senderkey):
     except KeyError:
         signals = None
     else:
-        for signal, receivers in iteritems(signals):
+        for signal, receivers in list(signals.items()):
             for receiver in receivers:
                 _kill_back_ref(receiver, senderkey)
 
@@ -572,7 +539,7 @@ def _remove_old_back_refs(senderkey, signal, receiver, receivers):
         found = 0
         signals = connections.get(signal)
         if signals is not None:
-            for sig, recs in iteritems(connections.get(signal, {})):
+            for sig, recs in list(connections.get(signal, {}).items()):
                 if sig != signal:
                     for rec in recs:
                         if rec is old_receiver:
@@ -582,8 +549,8 @@ def _remove_old_back_refs(senderkey, signal, receiver, receivers):
             _kill_back_ref(old_receiver, senderkey)
             return True
         return False
-        
-        
+
+
 def _kill_back_ref(receiver, senderkey):
     """Do actual removal of back reference from ``receiver`` to
     ``senderkey``."""
@@ -600,5 +567,3 @@ def _kill_back_ref(receiver, senderkey):
         except KeyError:
             pass
     return True
-
-    

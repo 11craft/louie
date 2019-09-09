@@ -13,3 +13,5 @@ The following people have contributed code to PyDispatcher and Louie:
 - `Brad Arndt <https://github.com/digdugg>`__
 
 - `Vasily Evseenko <https://github.com/svpcom>`__
+
+- `Ralic Lo <https://github.com/ralic>`__

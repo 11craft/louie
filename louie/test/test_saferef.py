@@ -7,7 +7,7 @@ class _Sample1(object):
     def x(self):
         pass
 
-    
+
 def _sample2(obj):
     pass
 
@@ -16,13 +16,13 @@ class _Sample3(object):
     def __call__(self, obj):
         pass
 
-    
+
 class TestSaferef(unittest.TestCase):
 
     # XXX: The original tests had a test for closure, and it had an
     # off-by-one problem, perhaps due to scope issues.  It has been
     # removed from this test suite.
-    
+
     def setUp(self):
         ts = []
         ss = []
@@ -41,32 +41,30 @@ class TestSaferef(unittest.TestCase):
             ts.append(t)
             s = safe_ref(t, self._closure)
             ss.append(s)
-    
+
     def tearDown(self):
-        if hasattr(self, 'ts'):
+        if hasattr(self, "ts"):
             del self.ts
-        if hasattr(self, 'ss'):
+        if hasattr(self, "ss"):
             del self.ss
-        
+
     def test_In(self):
         """Test the `in` operator for safe references (cmp)"""
         for t in self.ts[:50]:
             assert safe_ref(t.x) in self.ss
-            
+
     def test_Valid(self):
         """Test that the references are valid (return instance methods)"""
         for s in self.ss:
-            print((type(s)))
-            print("TYPPPEE")
             assert s()
-            
+
     def test_ShortCircuit(self):
         """Test that creation short-circuits to reuse existing references"""
         sd = {}
         for s in self.ss:
             sd[s] = 1
         for t in self.ts:
-            if hasattr(t, 'x'):
+            if hasattr(t, "x"):
                 assert safe_ref(t.x) in sd
             else:
                 assert safe_ref(t) in sd
@@ -78,8 +76,7 @@ class TestSaferef(unittest.TestCase):
             is raised
         """
         repr(self.ss[-1])
-        
+
     def _closure(self, ref):
         """Dumb utility mechanism to increment deletion counter"""
         self.closure_count += 1
-

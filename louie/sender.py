@@ -5,7 +5,7 @@ class _SENDER(type):
     """Base metaclass for sender classes."""
 
     def __str__(cls):
-        return '<Sender: {0}>'.format(cls.__name__)
+        return f"<Sender: {cls.__name__}>"
 
 
 class Any(object, metaclass=_SENDER):
@@ -32,4 +32,3 @@ class Anonymous(object, metaclass=_SENDER):
     routed as though there was a single sender (Anonymous) being used
     everywhere.
     """
-

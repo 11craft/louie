@@ -1,16 +1,15 @@
 """Common plugins for Louie."""
 
-from louie import dispatcher
-from louie import error
+from louie import dispatcher, error
 
 
 def install_plugin(plugin):
     cls = plugin.__class__
     for p in dispatcher.plugins:
         if p.__class__ is cls:
-            raise error.PluginTypeError(
-                'Plugin of type {0!r} already installed.'.format(cls))
+            raise error.PluginTypeError(f"Plugin of type {cls!r} already installed.")
     dispatcher.plugins.append(plugin)
+
 
 def remove_plugin(plugin):
     dispatcher.plugins.remove(plugin)
@@ -66,9 +65,9 @@ class QtWidgetPlugin(Plugin):
     def is_live(self, receiver):
         """If receiver is a method on a QWidget, only return True if
         it hasn't been destroyed."""
-        if (hasattr(receiver, 'im_self') and
-            isinstance(receiver.__self__, self.qt.QWidget)
-            ):
+        if hasattr(receiver, "im_self") and isinstance(
+            receiver.__self__, self.qt.QWidget
+        ):
             try:
                 receiver.__self__.x()
             except RuntimeError:
@@ -93,16 +92,19 @@ class TwistedDispatchPlugin(Plugin):
         # easier.
         from twisted import internet
         from twisted.internet.defer import Deferred
+
         self._internet = internet
         self._Deferred = Deferred
 
     def wrap_receiver(self, receiver):
         def wrapper(*args, **kw):
             d = self._Deferred()
+
             def called(dummy):
                 return receiver(*args, **kw)
+
             d.addCallback(called)
             self._internet.reactor.callLater(0, d.callback, None)
             return d
-        return wrapper
 
+        return wrapper
