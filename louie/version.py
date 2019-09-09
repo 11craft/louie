@@ -1,8 +1,6 @@
 """Louie version information."""
 
 
-NAME = 'Louie'
-DESCRIPTION = 'Signal dispatching mechanism'
-VERSION = '1.2a1'
-
-
+NAME = "Louie"
+DESCRIPTION = "Signal dispatching mechanism"
+VERSION = "2.0"

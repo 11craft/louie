@@ -1,8 +1,10 @@
 """Refactored 'safe reference from dispatcher.py"""
 
-import weakref
-import traceback
 import collections
+import traceback
+import weakref
+from functools import total_ordering
+
 
 def safe_ref(target, on_delete=None):
     """Return a *safe* weak reference to a callable target.
@@ -10,39 +12,39 @@ def safe_ref(target, on_delete=None):
     - ``target``: The object to be weakly referenced, if it's a bound
       method reference, will create a BoundMethodWeakref, otherwise
       creates a simple weakref.
-        
+
     - ``on_delete``: If provided, will have a hard reference stored to
       the callable to be called after the safe reference goes out of
       scope with the reference object, (either a weakref or a
       BoundMethodWeakref) as argument.
     """
-    if hasattr(target, 'im_self'):
+    if hasattr(target, "im_self"):
         if target.__self__ is not None:
             # Turn a bound method into a BoundMethodWeakref instance.
             # Keep track of these instances for lookup by disconnect().
-            assert hasattr(target, 'im_func'), (
-                "safe_ref target {0!r} has im_self, but no im_func, "
+            assert hasattr(target, "im_func"), (
+                f"safe_ref target {target!r} has im_self, but no im_func, "
                 "don't know how to create reference"
-                    .format(target))
+            )
             reference = BoundMethodWeakref(target=target, on_delete=on_delete)
             return reference
-    
-    #attributes have changed names in python 3.x
-    if hasattr(target, '__self__'):
+
+    if hasattr(target, "__self__"):
         if target.__self__ is not None:
-           assert hasattr(target, '__func__'), (
-               "safe_ref target {0!r} has __self__, but no __func__, "
-               "don't know how to create reference".format(target)) 
-           reference = BoundMethodWeakref(target=target, on_delete=on_delete)
-           return reference
+            assert hasattr(target, "__func__"), (
+                f"safe_ref target {target!r} has __self__, but no __func__, "
+                "don't know how to create reference"
+            )
+            reference = BoundMethodWeakref(target=target, on_delete=on_delete)
+            return reference
 
-
-    if hasattr(on_delete, '__call__'):
+    if hasattr(on_delete, "__call__"):
         return weakref.ref(target, on_delete)
     else:
         return weakref.ref(target)
-    
 
+
+@total_ordering
 class BoundMethodWeakref(object):
     """'Safe' and reusable weak references to instance methods.
 
@@ -53,7 +55,7 @@ class BoundMethodWeakref(object):
     object and the function which together define the instance method.
 
     Attributes:
-    
+
     - ``key``: The identity key for the reference, calculated by the
       class's calculate_key method applied to the target instance method.
 
@@ -68,7 +70,7 @@ class BoundMethodWeakref(object):
     - ``weak_func``: Weak reference to the target function.
 
     Class Attributes:
-        
+
     - ``_all_instances``: Class attribute pointing to all live
       BoundMethodWeakref objects indexed by the class's
       calculate_key(target) method applied to the target objects.
@@ -76,9 +78,9 @@ class BoundMethodWeakref(object):
       that multiple references to the same (object, function) pair
       produce the same BoundMethodWeakref instance.
     """
-    
+
     _all_instances = weakref.WeakValueDictionary()
-    
+
     def __new__(cls, target, on_delete=None, *arguments, **named):
         """Create new instance or return current instance.
 
@@ -108,7 +110,7 @@ class BoundMethodWeakref(object):
           must have im_self and im_func attributes and be
           reconstructable via the following, which is true of built-in
           instance methods::
-            
+
             target.im_func.__get__( target.im_self )
 
         - ``on_delete``: Optional callback which will be called when
@@ -117,27 +119,31 @@ class BoundMethodWeakref(object):
           single argument, which will be passed a pointer to this
           object.
         """
-        def remove(weak, self=self):
+
+        def remove(weak, self_=self):
             """Set self.isDead to True when method or instance is destroyed."""
-            methods = self.deletion_methods[:]
-            del self.deletion_methods[:]
+            methods = self_.deletion_methods[:]
+            del self_.deletion_methods[:]
             try:
-                del self.__class__._all_instances[self.key]
+                del self_.__class__._all_instances[self_.key]
             except KeyError:
                 pass
             for function in methods:
                 try:
                     if isinstance(function, collections.Callable):
-                        function(self)
+                        function(self_)
                 except Exception:
                     try:
                         traceback.print_exc()
                     except AttributeError as e:
-                        print(('Exception during saferef {} '
-                               'cleanup function {}: {}'.format(self, function, e)))
+                        print(
+                            f"Exception during saferef {self_} "
+                            f"cleanup function {function}: {e}"
+                        )
+
         self.deletion_methods = [on_delete]
         self.key = self.calculate_key(target)
-        try: 
+        try:
             self.weak_self = weakref.ref(target.__self__, remove)
             self.weak_func = weakref.ref(target.__func__, remove)
             self.self_name = str(target.__self__)
@@ -146,41 +152,47 @@ class BoundMethodWeakref(object):
             self.weak_self = weakref.ref(target.__self__, remove)
             self.weak_func = weakref.ref(target.__func__, remove)
             self.self_name = str(target.__self__)
-            self.__name__ = str(target.__func__.__name__) 
+            self.__name__ = str(target.__func__.__name__)
 
+    @classmethod
     def calculate_key(cls, target):
         """Calculate the reference key for this reference.
 
         Currently this is a two-tuple of the id()'s of the target
         object and the target function respectively.
         """
-        
-        #try/except is for python3 attribute name changes probably a better way to fix this 
-        try:
-            return (id(target.__self__), id(target.__func__))
-        except AttributeError:
-            return (id(target.__self__), id(target.__func__))
-    calculate_key = classmethod(calculate_key)
-    
+        return id(target.__self__), id(target.__func__)
+
     def __str__(self):
         """Give a friendly representation of the object."""
-        return "{0}({1}.{2})".format(
-            self.__class__.__name__,
-            self.self_name,
-            self.__name__,
-            )
-    
+        return f"{self.__class__.__name__}({self.self_name}.{self.__name__})"
+
     __repr__ = __str__
-    
+
     def __bool__(self):
         """Whether we are still a valid reference."""
         return self() is not None
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         """Compare with another reference."""
         if not isinstance(other, self.__class__):
-            return cmp(self.__class__, type(other))
-        return cmp(self.key, other.key)
+            return self.__class__ is type(other)
+        else:
+            return self.key == other.key
+
+    def __ne__(self, other):
+        """Compare with another reference."""
+        if not isinstance(other, self.__class__):
+            return self.__class__ is not type(other)
+        else:
+            return self.key != other.key
+
+    def __lt__(self, other):
+        """Compare with another reference."""
+        if not isinstance(other, self.__class__):
+            return self.__class__ < type(other)
+        else:
+            return self.key < other.key
 
     def __call__(self):
         """Return a strong reference to the bound method.
@@ -198,3 +210,6 @@ class BoundMethodWeakref(object):
             if function is not None:
                 return function.__get__(target)
         return None
+
+    def __hash__(self):
+        return hash(self.key)

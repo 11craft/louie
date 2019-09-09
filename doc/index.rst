@@ -27,9 +27,7 @@ Louie is licensed under `The BSD License`_.
 Louie Requirements
 ==================
 
-Python 2.3 or higher.
-
-Tested against Python 2.6 through 3.5.
+Python 3.6 or higher.
 
 
 Installing Louie
@@ -41,9 +39,6 @@ the `Python Package Index`_.
 .. _pip: https://pypi.python.org/pypi/pip
 
 .. _Python Package Index: https://pypi.python.org/pypi/Louie
-
-In many modern Python environments, and also starting with Python 3.4,
-pip installed by default.
 
 Run this command::
 

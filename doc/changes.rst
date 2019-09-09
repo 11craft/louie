@@ -9,6 +9,14 @@ Louie.
 .. _PyDispatcher: http://cheeseshop.python.org/pypi/PyDispatcher
 
 
+Changes from Louie 1.x to Louie 2.x
+===================================
+
+- Python 2.x is no longer supported.
+
+- Python 3.7 is the minimum version tested.
+
+
 Changes from PyDispatcher to Louie 1.0
 ======================================
 

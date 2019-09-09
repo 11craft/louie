@@ -12,11 +12,10 @@ class _SIGNAL(type):
     """Base metaclass for signal classes."""
 
     def __str__(cls):
-        return '<Signal: {0}>'.format(cls.__name__)
+        return f"<Signal: {cls.__name__}>"
 
 
 class Signal(object, metaclass=_SIGNAL):
-
     pass
 
 
@@ -27,4 +26,3 @@ class All(Signal):
     sendExact to denote that the signal should react to all signals,
     not just a particular signal.
     """
-
