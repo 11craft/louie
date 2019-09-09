@@ -37,8 +37,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Louie'
-copyright = u'2009, Patrick K. O\'Brien and contributors'
+project = 'Louie'
+copyright = '2009, Patrick K. O\'Brien and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -172,8 +172,8 @@ htmlhelp_basename = 'Louiedoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Louie.tex', u'Louie Documentation',
-   u'Patrick K. O\'Brien and contributors', 'manual'),
+  ('index', 'Louie.tex', 'Louie Documentation',
+   'Patrick K. O\'Brien and contributors', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

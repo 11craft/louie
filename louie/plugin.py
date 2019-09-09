@@ -67,10 +67,10 @@ class QtWidgetPlugin(Plugin):
         """If receiver is a method on a QWidget, only return True if
         it hasn't been destroyed."""
         if (hasattr(receiver, 'im_self') and
-            isinstance(receiver.im_self, self.qt.QWidget)
+            isinstance(receiver.__self__, self.qt.QWidget)
             ):
             try:
-                receiver.im_self.x()
+                receiver.__self__.x()
             except RuntimeError:
                 return False
         return True

@@ -8,7 +8,7 @@ class _SENDER(type):
         return '<Sender: {0}>'.format(cls.__name__)
 
 
-class Any(object):
+class Any(object, metaclass=_SENDER):
     """Used to represent either 'any sender'.
 
     The Any class can be used with connect, disconnect, send, or
@@ -16,10 +16,8 @@ class Any(object):
     sender, not just a particular sender.
     """
 
-    __metaclass__ = _SENDER
 
-
-class Anonymous(object):
+class Anonymous(object, metaclass=_SENDER):
     """Singleton used to signal 'anonymous sender'.
 
     The Anonymous class is used to signal that the sender of a message
@@ -34,6 +32,4 @@ class Anonymous(object):
     routed as though there was a single sender (Anonymous) being used
     everywhere.
     """
-
-    __metaclass__ = _SENDER
 

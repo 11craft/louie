@@ -56,7 +56,7 @@ class TestSaferef(unittest.TestCase):
     def test_Valid(self):
         """Test that the references are valid (return instance methods)"""
         for s in self.ss:
-            print(type(s))
+            print((type(s)))
             print("TYPPPEE")
             assert s()
             

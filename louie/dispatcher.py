@@ -42,16 +42,16 @@ try:
 except AttributeError:
     #python 3
     def itervalues(d):
-        return iter(d.values())
+        return iter(list(d.values()))
     def iteritems(d):
-        return iter(d.items())
+        return iter(list(d.items()))
 
 else:
     #python 2
     def itervalues(d):
-        return d.itervalues()
+        return iter(d.values())
     def iteritems(d):
-        return d.iteritems()
+        return iter(d.items())
 
 
 # Support for statistics.
@@ -61,11 +61,11 @@ if __debug__:
     sends = 0
 
     def print_stats():
-        print('\n'
+        print(('\n'
                'Louie connects: {}\n'
                'Louie disconnects: {}\n'
                'Louie sends: {}\n'
-               '\n'.format(connects, disconnects, sends))
+               '\n'.format(connects, disconnects, sends)))
 
     if 'PYDISPATCH_STATS' in os.environ:
         import atexit
@@ -483,7 +483,7 @@ def _remove_receiver(receiver):
     backKey = id(receiver)
     for senderkey in senders_back.get(backKey, ()):
         try:
-            signals = connections[senderkey].keys()
+            signals = list(connections[senderkey].keys())
         except KeyError:
             pass
         else:
