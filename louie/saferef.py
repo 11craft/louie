@@ -1,6 +1,6 @@
 """Refactored 'safe reference from dispatcher.py"""
 
-import collections
+import collections.abc
 import traceback
 import weakref
 from functools import total_ordering
@@ -130,7 +130,7 @@ class BoundMethodWeakref(object):
                 pass
             for function in methods:
                 try:
-                    if isinstance(function, collections.Callable):
+                    if isinstance(function, collections.abc.Callable):
                         function(self_)
                 except Exception:
                     try:
