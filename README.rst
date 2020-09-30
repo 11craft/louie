@@ -16,4 +16,4 @@ Python Cookbook.
 
 .. _PyDispatcher: http://pydispatcher.sf.net/
 
-.. _recipe: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
+.. _recipe: https://code.activestate.com/recipes/87056/
