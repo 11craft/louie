@@ -25,5 +25,5 @@ setup(
     package_data={
         # -*- package_data: -*-
     },
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )

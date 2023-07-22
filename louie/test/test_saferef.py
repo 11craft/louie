@@ -18,7 +18,6 @@ class _Sample3(object):
 
 
 class TestSaferef(unittest.TestCase):
-
     # XXX: The original tests had a test for closure, and it had an
     # off-by-one problem, perhaps due to scope issues.  It has been
     # removed from this test suite.
